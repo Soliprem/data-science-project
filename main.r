@@ -1,4 +1,5 @@
 library(tidyverse)
+library(paletteer) #best library in CRAN https://pmassicotte.github.io/paletteer_gallery/
 library(readxl)
 
 df <- read_excel("./data/Freedom_In_The_50_States_2023.xlsx") %>%
