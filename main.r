@@ -2,6 +2,6 @@ library(tidyverse)
 library(paletteer) #best library in CRAN https://pmassicotte.github.io/paletteer_gallery/
 library(readxl)
 
-df <- read_excel("./data/Freedom_In_The_50_States_2023.xlsx") %>%
-        select(-"Important notes for fiscal data (mouse over to see comment)")
-glimpse(df)
+load(file="./data/gov_transfers.rda")
+View(gov_transfers)
+
