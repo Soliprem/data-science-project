@@ -19,7 +19,11 @@
           rstudio
           R
           rPackages.tidyverse
-          rPackages.readxl
+          rPackages.kableExtra
+          rPackages.GGally
+          rPackages.gridExtra
+          rPackages.rddensity
+          rPackages.modelsummary
           quarto
         ];
         shellHook = ''
