@@ -13,7 +13,7 @@ library(modelsummary)
 load("data/gov_transfers.rda")
 
 gov_transfers <- gov_transfers |> 
-  rename(Normalized_Income = Normalized_Income)
+  rename(Normalized_Income = Income_Centered)
 
 #Exploring the data
 head(gov_transfers)
