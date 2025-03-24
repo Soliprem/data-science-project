@@ -18,18 +18,21 @@ gov_transfers <- gov_transfers |>
 #Exploring the data
 head(gov_transfers)
 
-gov_transfers |> 
-  summary() |> 
-  kable()
+# Exploring the data
+gov_transfers |>
+  summary() |>
+  kable("markdown") |>
+  save_kable("artifacts/gov_transfers.md")
 
 gov_transfers |> 
   ggpairs()
 
-#Checking for fuzziness
-gov_transfers |> 
-  group_by(Normalized_Income < 0, Participation) |> 
-  count() |> 
-  kable()
+# Checking for fuzziness
+gov_transfers |>
+  group_by(Income_Centered < 0, Participation) |>
+  count() |>
+  kable("markdown") |>
+  save_kable("artifacts/gov_transfers.md")
 
 gov_transfers |> 
   ggplot(aes(x = Normalized_Income, y = Participation)) +
