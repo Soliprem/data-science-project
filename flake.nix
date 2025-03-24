@@ -26,6 +26,7 @@
           rPackages.gridExtra
           rPackages.rddensity
           rPackages.modelsummary
+          rPackages.ggpubr
           pandoc
         ];
 
@@ -53,6 +54,7 @@
           rPackages.gridExtra
           rPackages.rddensity
           rPackages.modelsummary
+          rPackages.ggpubr
           pandoc
         ];
         shellHook = ''
