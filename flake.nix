@@ -25,9 +25,13 @@
           rPackages.rddensity
           rPackages.modelsummary
           quarto
+          pandoc
         ];
         shellHook = ''
           nu
+          Rscript main.R
+          pandoc artifacts/gov_transfers.md -o artifacts/gov_transfers.typ
+          pandoc artifacts/gov_transfers_fuzziness.md -o artifacts/gov_transfers_fuzziness.typ
         '';
       };
     });
