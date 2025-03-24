@@ -32,7 +32,7 @@ gov_transfers |>
   group_by(Income_Centered < 0, Participation) |>
   count() |>
   kable("markdown") |>
-  save_kable("artifacts/gov_transfers.md")
+  save_kable("artifacts/gov_transfers_fuzziness.md")
 
 gov_transfers |> 
   ggplot(aes(x = Normalized_Income, y = Participation)) +
