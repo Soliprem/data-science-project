@@ -6,6 +6,7 @@ library(tidyverse)
 library(kableExtra)
 library(GGally)
 library(ggpubr)
+library(grid)
 library(rddensity)
 library(modelsummary)
 
@@ -124,18 +125,24 @@ quart_graph_c <- quart_bw |>
   labs(xlab = "", ylab = "") +
   theme_light()
 
-ggarrange(plotlist = list(
-  full_graph, full_graph_q, full_graph_c,
-  half_graph, half_graph_q, half_graph_c, quart_graph, quart_graph_q, quart_graph_c
-), ncol = 3, nrow = 3)
+Plots <- ggarrange(full_graph + rremove("ylab") + rremove("xlab") , full_graph_q + rremove("ylab") + rremove("xlab"), full_graph_c + rremove("ylab") + rremove("xlab"), half_graph + rremove("ylab") + rremove("xlab"), half_graph_q + rremove("ylab") + rremove("xlab"), half_graph_c + rremove("ylab") + rremove("xlab"), quart_graph + rremove("ylab") + rremove("xlab"), quart_graph_q + rremove("ylab") + rremove("xlab"), quart_graph_c + rremove("ylab") + rremove("xlab"),
+                  ncol = 3, nrow = 3)
+
+annotate_figure(Plots, left = textGrob("Support", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
+                bottom = textGrob("Normalized Income", gp = gpar(cex = 1.3)))
+
 
 # RDD calculation by different specifications
+
+#linear specifications
+
 full_lm <- lm(Support ~ Participation + Normalized_Income, data = gov_transfers)
 
 half_lm <- lm(Support ~ Participation + Normalized_Income, data = half_bw)
 
 quart_lm <- lm(Support ~ Participation + Normalized_Income, data = quart_bw)
 
+#polynomial specifications 
 full_q <- lm(Support ~ Participation + poly(Normalized_Income, degree = 2), data = gov_transfers)
 
 half_q <- lm(Support ~ Participation + poly(Normalized_Income, degree = 2), data = half_bw)
@@ -148,20 +155,23 @@ half_c <- lm(Support ~ Participation + poly(Normalized_Income, degree = 3), data
 
 quart_c <- lm(Support ~ Participation + poly(Normalized_Income, degree = 3), data = quart_bw)
 
+#slope (interaction) specifications 
 full_slope <- lm(Support ~ Participation + Normalized_Income + Participation * Normalized_Income, data = gov_transfers)
 
 half_slope <- lm(Support ~ Participation + Normalized_Income + Participation * Normalized_Income, data = half_bw)
 
 quart_slope <- lm(Support ~ Participation + Normalized_Income + Participation * Normalized_Income, data = quart_bw)
 
+#interaction specifications controlling (conditioning) for age
 full_age <- lm(Support ~ Participation + Normalized_Income +
   Participation * Normalized_Income + Age, data = gov_transfers)
 
 half_age <- lm(Support ~ Participation + Normalized_Income +
-  Participation * Normalized_Income + Age, data = gov_transfers)
+  Participation * Normalized_Income + Age, data = half_bw)
 
-quart_age <- lm(Support ~ Participation + Normalized_Income + Participation * Normalized_Income + Age, data = half_bw)
+quart_age <- lm(Support ~ Participation + Normalized_Income + Participation * Normalized_Income + Age, data = quart_bw)
 
+#specification comparisons
 full_specs <- msummary(
   list(full_lm, full_q, full_c, full_slope, full_age),
   output = "markdown", stars = T
@@ -179,3 +189,27 @@ quart_specs <- msummary(
   output = "markdown", stars = T
 )
 quart_specs
+
+full_comparison  <- msummary(
+  list(full_lm, full_q, full_c),
+  output = "markdown", stars = T
+)
+full_comparison
+
+half_comparison <- msummary(
+  list(half_lm, half_q, half_c),
+  output = "markdown", stars = T
+)
+half_comparison
+
+quart_comparison  <- msummary(
+  list(quart_lm, quart_q, quart_c),
+  output = "markdown", stars = T
+)
+quart_comparison
+
+overall_comparison <- msummary(
+  list(full_lm, full_q, full_c, half_lm, half_q, half_c, quart_lm, quart_q, quart_c),
+  output = "markdown", stars = T
+)
+overall_comparison
