@@ -29,7 +29,7 @@ gov_transfers |>
 
 # Checking for fuzziness
 gov_transfers |>
-  group_by(Income_Centered < 0, Participation) |>
+  group_by(Normalized_Income < 0, Participation) |>
   count() |>
   kable("markdown") |>
   save_kable("artifacts/gov_transfers_fuzziness.md")
