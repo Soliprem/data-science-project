@@ -12,9 +12,9 @@
   } @ inputs:
     flake-utils.lib.eachDefaultSystem (system: let
       inherit (self) outputs;
-      pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
     in {
-      packages.x86_64-linux.default = pkgs.stdenv.mkDerivation {
+      packages.default = pkgs.stdenv.mkDerivation {
         pname = "run-hook";
         version = "1.0";
 
@@ -29,14 +29,17 @@
           pandoc
         ];
 
-        # The hook you want to run
         buildPhase = ''
+          mkdir -p artifacts
           Rscript main.R
           pandoc artifacts/gov_transfers.md -o artifacts/gov_transfers.typ
           pandoc artifacts/gov_transfers_fuzziness.md -o artifacts/gov_transfers_fuzziness.typ
         '';
 
-        installPhase = "mkdir -p $out";
+        installPhase = ''
+          mkdir -p $out/artifacts
+          cp -r artifacts/* $out/artifacts/
+        '';
 
         src = ./.;
       };
