@@ -1,0 +1,35 @@
+|x                                                               |
+|:---------------------------------------------------------------|
+|                                                                |
+|Manipulation testing using local polynomial density estimation. |
+|                                                                |
+|Number of obs =       1948                                      |
+|Model =               unrestricted                              |
+|Kernel =              triangular                                |
+|BW method =           estimated                                 |
+|VCE method =          jackknife                                 |
+|                                                                |
+|c = 0                 Left of c           Right of c            |
+|Number of obs         1127                821                   |
+|Eff. Number of obs    384                 275                   |
+|Order est. (p)        2                   2                     |
+|Order bias (q)        3                   3                     |
+|BW est. (h)           0.007               0.007                 |
+|                                                                |
+|Method                T                   P > &#124;T&#124;     |
+|Robust                -0.8456             0.3978                |
+|                                                                |
+|                                                                |
+|P-values of binomial tests (H0: p=0.5).                         |
+|                                                                |
+|Window Length              <c     >=c    P>&#124;T&#124;        |
+|0.001     + 0.001          20      38    0.0247                 |
+|0.002     + 0.002          67      58    0.4744                 |
+|0.002     + 0.002         122      96    0.0902                 |
+|0.003     + 0.003         158     116    0.0131                 |
+|0.004     + 0.004         197     129    0.0002                 |
+|0.004     + 0.004         232     156    0.0001                 |
+|0.005     + 0.005         265     190    0.0005                 |
+|0.006     + 0.006         312     211    0.0000                 |
+|0.006     + 0.006         337     242    0.0001                 |
+|0.007     + 0.007         384     275    0.0000                 |
