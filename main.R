@@ -5,10 +5,10 @@
 library(tidyverse)
 library(kableExtra)
 library(GGally)
-library(ggpubr)
 library(grid)
 library(rddensity)
 library(modelsummary)
+library(ggpubr)
 
 # Importing the data
 load("data/gov_transfers.rda")
@@ -19,12 +19,13 @@ head(gov_transfers)
 gov_transfers |>
   summary() |>
   kable("markdown") |>
-  save_kable("artifacts/gov_transfexxrs.md")
+  save_kable("artifacts/gov_transfers.md")
 
 gov_transfers |>
   ggpairs()
 
-# Checking for fuzziness
+# Checking the data
+## Checking for fuzziness
 gov_transfers |>
   group_by(Income_Centered < 0, Participation) |>
   count() |>
@@ -37,7 +38,7 @@ gov_transfers |>
   geom_point(color = "darkcyan", position = position_jitter(width = 0, height = 0.12)) +
   theme_light()
 
-# Checking for manipulation
+## Checking for manipulation
 density <- gov_transfers$Income_Centered |>
   rddensity(c = 0)
 
@@ -50,7 +51,7 @@ density |>
 density |>
   rdplotdensity(X = gov_transfers$Income_Centered, type = "both", xlabel = "Normalized Income", ylabel = "Density")
 
-# Creting binomial Support and tibbles by different bandwiths
+# Creating a binomial Support variable and tibbles of different bandwiths
 gov_transfers <- gov_transfers |> 
   mutate(Support_Binomial = case_when(Support == 1 ~ 1, T ~ 0))
 
@@ -60,84 +61,8 @@ quart_bw <- gov_transfers |>
 half_bw <- gov_transfers |>
   filter(-0.01 < Income_Centered & Income_Centered < 0.01)
 
-# RDD graphing by different specifications
-#Full graphs
-full_graph <- gov_transfers |>
-  ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-  geom_point(color = "darkcyan") +
-  geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "lm", color = "navy", fill = "lightblue") +
-  theme_light()
-
-full_graph_q <- gov_transfers |>
-  ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-  geom_point(color = "darkcyan") +
-  geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "lm", formula = y ~ poly(x, degree = 2), color = "navy", fill = "lightblue") +
-  theme_light()
-
-full_graph_c <- gov_transfers |>
-  ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-  geom_point(color = "darkcyan") +
-  geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "lm", formula = y ~ poly(x, degree = 3), color = "navy", fill = "lightblue") +
-  theme_light()
-
-#half graphs
-half_graph <- half_bw |>
-  ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-  geom_point(color = "darkcyan") +
-  geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "lm", color = "navy", fill = "lightblue") +
-  theme_light()
-
-half_graph_q <- half_bw |>
-  ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-  geom_point(color = "darkcyan") +
-  geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "lm", formula = y ~ poly(x, degree = 2), color = "navy", fill = "lightblue") +
-  theme_light()
-
-half_graph_c <- half_bw |>
-  ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-  geom_point(color = "darkcyan") +
-  geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "lm", formula = y ~ poly(x, degree = 3), color = "navy", fill = "lightblue") +
-  theme_light()
-
-#quart graphs
-quart_graph <- quart_bw |>
-  ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-  geom_point(color = "darkcyan") +
-  geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "lm", color = "navy", fill = "lightblue") +
-  theme_light()
-
-quart_graph_q <- quart_bw |>
-  ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-  geom_point(color = "darkcyan") +
-  geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "lm", formula = y ~ poly(x, degree = 2), color = "navy", fill = "lightblue") +
-  theme_light()
-
-quart_graph_c <- quart_bw |>
-  ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-  geom_point(color = "darkcyan") +
-  geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "lm", formula = y ~ poly(x, degree = 3), color = "navy", fill = "lightblue") +
-  theme_light()
-
-#plots <- ggarrange(full_graph + rremove("ylab") + rremove("xlab"), full_graph_q + rremove("ylab") + rremove("xlab"), full_graph_c + rremove("ylab") + rremove("xlab"), half_graph + rremove("ylab") + rremove("xlab"), half_graph_q + rremove("ylab") + rremove("xlab"), half_graph_c + rremove("ylab") + rremove("xlab"), quart_graph + rremove("ylab") + rremove("xlab"), quart_graph_q + rremove("ylab") + rremove("xlab"), quart_graph_c + rremove("ylab") + rremove("xlab"),
-#                  ncol = 3, nrow = 3)
-# 
-#annotate_figure(plots, left = textGrob("Support", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
-#                bottom = textGrob("Normalized Income", gp = gpar(cex = 1.3)))
-
-
-# RDD calculation by different specifications
-
+# RDD calculation by different specifications and bandwiths
 ## Linear specifications
-
 full_lm <- lm(Support ~ Participation + Income_Centered, data = gov_transfers)
 
 half_lm <- lm(Support ~ Participation + Income_Centered, data = half_bw)
@@ -166,11 +91,9 @@ half_slope <- lm(Support ~ Participation + Income_Centered + Participation * Inc
 quart_slope <- lm(Support ~ Participation + Income_Centered + Participation * Income_Centered, data = quart_bw)
 
 ## Interaction specifications controlling for age
-full_age <- lm(Support ~ Participation + Income_Centered +
-  Participation * Income_Centered + Age, data = gov_transfers)
+full_age <- lm(Support ~ Participation + Income_Centered + Participation * Income_Centered + Age, data = gov_transfers)
 
-half_age <- lm(Support ~ Participation + Income_Centered +
-  Participation * Income_Centered + Age, data = half_bw)
+half_age <- lm(Support ~ Participation + Income_Centered + Participation * Income_Centered + Age, data = half_bw)
 
 quart_age <- lm(Support ~ Participation + Income_Centered + Participation * Income_Centered + Age, data = quart_bw)
 
@@ -182,93 +105,215 @@ half_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participati
 quart_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participation * Income_Centered + Age, family = binomial, data = quart_bw)
 
 # Specification comparisons
-# full_specs <- msummary(
-#   list(full_lm, full_q, full_c, full_slope, full_age),
-#   output = "markdown", stars = T
-# )
-# full_specs
-# 
-# half_specs <- msummary(
-#   list(half_lm, half_q, half_c, half_slope, half_age),
-#   output = "markdown", stars = T
-# )
-# half_specs
-# 
-# quart_specs <- msummary(
-#   list(quart_lm, quart_q, quart_c, quart_slope, quart_age),
-#   output = "markdown", stars = T
-# )
-# quart_specs
-# 
-# full_comparison  <- msummary(
-#   list(full_lm, full_q, full_c),
-#   output = "markdown", stars = T
-# )
-# full_comparison
-# 
-# half_comparison <- msummary(
-#   list(half_lm, half_q, half_c),
-#   output = "markdown", stars = T
-# )
-# half_comparison
-# 
-# quart_comparison  <- msummary(
-#   list(quart_lm, quart_q, quart_c),
-#   output = "markdown", stars = T
-# )
-# quart_comparison
-
-overall_comparison <- msummary(
+## Specifications in the paper's main body (selected from quarter bandwith)
+paper_comp <- msummary(
   list(
-    "Full ^1" = full_lm, 
-    "Full ^2" = full_q, 
-    "Full ^3" = full_c,
-    "Full Slope" = full_slope,
-    "Full Age" = full_age,
-    "Full Lgt" = full_lgt,
-    "Half ^1" = half_lm, 
-    "Half ^2" = half_q, 
-    "Half ^3" = half_c, 
-    "Half Slope" = half_slope,
-    "Half Age" = half_age,
-    "Half Lgt" = half_lgt,
-    "Quart ^1" = quart_lm, 
-    "Quart ^2" = quart_q, 
-    "Quart ^3" = quart_c,
-    "Quart Slope" = quart_slope,
-    "Quart Age" = quart_age,
-    "Quart Lgt" = quart_lgt
-    ),
-  output = "artifacts/all_comp.md", stars = T
-)
-#quart model summary & graph comparison
-quart_comparison <- msummary(
-  list(
-    "Quart ^2" = quart_q, 
-    "Quart Slope" = quart_slope,
-    "Quart Age" = quart_age,
-    "Quart Lgt" = quart_lgt
+    "Quadratic" = quart_q, 
+    "Slope" = quart_slope,
+    "Slope and Age" = quart_age,
+    "Slope and Age, Logistic" = quart_lgt
   ),
-  output = "artifacts/quart_comp.md", stars = T
+  output = "artifacts/paper_comp.md", stars = T
 )
-### WIP MODEL GRAPHS
-quart_graph_slope <- quart_bw |>
+
+## Specifications in Appendix A (full bandwith)
+full_comp <- msummary(
+  list(
+    "Linear" = full_lm,
+    "Quadratic" = full_q,
+    "Cubic" = full_c,
+    "Slope" = full_slope,
+    "Slope and Age" = full_age,
+    "Slope and Age, Logistic" = full_lgt
+  ),
+  output = "artifacts/full_comp.md", stars = T
+)
+
+## Specifications in Appendix B (half bandwith)
+half_comp <- msummary(
+  list(
+    "Linear" = half_lm,
+    "Quadratic" = half_q,
+    "Cubic" = half_c,
+    "Slope" = half_slope,
+    "Slope and Age" = half_age,
+    "Slope and Age, Logistic" = half_lgt
+  ),
+  output = "artifacts/half_comp.md", stars = T
+)
+
+## Specifications in Appendix C (others from quarter bandwith)
+quart_comp_other <- msummary(
+  list(
+    "Linear" = half_lm,
+    "Cubic" = half_c
+  ),
+  output = "artifacts/quart_comp_other.md", stars = T
+)
+
+# Graphing the specifications in the paper's main body
+## Quadratic specification
+pred_q <- predict(quart_q, se.fit = T)
+graph_q <- quart_bw |>
   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
   geom_point(color = "darkcyan") +
   geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "lm", mapping = aes(y = predict(quart_slope, quart_bw)), color = "navy", fill = "lightblue") +
-  theme_light()
+  geom_line(aes(y = pred_q$fit), color = "navy", size = 1) +
+  geom_ribbon(aes(ymin = pred_q$fit - 1.96 * pred_q$se.fit, ymax = pred_q$fit + 1.96 * pred_q$se.fit), fill = "lightblue", alpha = 0.5) +
+  ggtitle("Quadratic") +
+  theme_light() +
+  lapply(list("xlab", "ylab"), rremove)
 
-quart_graph_age <- quart_bw |>
+## Slope specification
+pred_slope <- predict(quart_slope, se.fit = T)
+graph_slope <- quart_bw |>
   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
   geom_point(color = "darkcyan") +
   geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "lm", mapping = aes(y = predict(quart_age, quart_bw)), color = "navy", fill = "lightblue") +
-  theme_light()
+  geom_line(aes(y = pred_slope$fit), color = "navy", size = 1) +
+  geom_ribbon(aes(ymin = pred_slope$fit - 1.96 * pred_slope$se.fit, ymax = pred_slope$fit + 1.96 * pred_slope$se.fit), fill = "lightblue", alpha = 0.5) +
+  ggtitle("Slope") +
+  theme_light() +
+  lapply(list("xlab", "ylab"), rremove)
 
-quart_graph_logit <- quart_bw |>
+## Slope and age specification
+pred_age <- predict(quart_age, mutate(quart_bw, Age = mean(Age)), se.fit = T)
+graph_age <- quart_bw |>
+  ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+  geom_point(color = "darkcyan") +
+  geom_vline(xintercept = 0, color = "gray") +
+  geom_line(aes(y = pred_age$fit), color = "navy", size = 1) +
+  geom_ribbon(aes(ymin = pred_age$fit - 1.96 * pred_age$se.fit, ymax = pred_age$fit + 1.96 * pred_age$se.fit), fill = "lightblue", alpha = 0.5) +
+  ggtitle("Slope and Age") +
+  theme_light() +
+  lapply(list("xlab", "ylab"), rremove)
+
+## Logistic specification
+pred_lgt <- predict(quart_lgt, mutate(quart_bw, Age = mean(Age)), type = "response", se.fit = T)
+graph_lgt <- quart_bw |>
   ggplot(aes(x = Income_Centered, y = Support_Binomial, group = Participation)) +
   geom_point(color = "darkcyan") +
   geom_vline(xintercept = 0, color = "gray") +
-  geom_smooth(method = "glm", mapping = aes(y = predict(quart_lgt, quart_bw)), color = "navy", fill = "lightblue") +
-  theme_light()
+  geom_line(aes(y = pred_lgt$fit), color = "navy", size = 1) +
+  geom_ribbon(aes(ymin = pred_lgt$fit - 1.96 * pred_lgt$se.fit, ymax = pred_lgt$fit + 1.96 * pred_lgt$se.fit), fill = "lightblue", alpha = 0.5) +
+  ggtitle("Slope and Age, Logistic") +
+  theme_light() +
+  lapply(list("xlab", "ylab"), rremove)
+
+## Merging the graphs
+plots <- ggarrange(graph_q, graph_slope, graph_age, graph_lgt, ncol = 2, nrow = 2)
+
+annotate_figure(plots, left = textGrob("Support", rot = 90, vjust = 0.5), bottom = textGrob("Income_Centered"))
+
+## All specifications
+# all_comp <- msummary(
+#   list(
+#     "Full ^1" = full_lm, 
+#     "Full ^2" = full_q, 
+#     "Full ^3" = full_c,
+#     "Full Slope" = full_slope,
+#     "Full Age" = full_age,
+#     "Full Lgt" = full_lgt,
+#     "Half ^1" = half_lm, 
+#     "Half ^2" = half_q, 
+#     "Half ^3" = half_c, 
+#     "Half Slope" = half_slope,
+#     "Half Age" = half_age,
+#     "Half Lgt" = half_lgt,
+#     "Quart ^1" = quart_lm, 
+#     "Quart ^2" = quart_q, 
+#     "Quart ^3" = quart_c,
+#     "Quart Slope" = quart_slope,
+#     "Quart Age" = quart_age,
+#     "Quart Lgt" = quart_lgt
+#   ),
+#   output = "artifacts/all_comp.md", stars = T
+# )
+# 
+### WIP MODEL GRAPHS
+# quart_bw |>
+#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "lm", mapping = aes(y = predict(quart_slope, quart_bw), x = Income_Centered), color = "navy", fill = "lightblue") +
+#   theme_light()
+# 
+# quart_bw |>
+#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "lm", mapping = aes(y = predict(quart_age, quart_bw), x = Income_Centered), color = "navy", fill = "lightblue") +
+#   theme_light()
+# 
+# quart_bw |>
+#   ggplot(aes(x = Income_Centered, y = Support_Binomial, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "glm", mapping = aes(y = predict(quart_lgt, quart_bw)), color = "navy", fill = "lightblue") +
+#   theme_light()
+# 
+# ## Full bandwith graphs
+# full_graph <- gov_transfers |>
+#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "lm", color = "navy", fill = "lightblue") +
+#   theme_light()
+# 
+# full_graph_q <- gov_transfers |>
+#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 2), color = "navy", fill = "lightblue") +
+#   theme_light()
+# 
+# full_graph_c <- gov_transfers |>
+#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 3), color = "navy", fill = "lightblue") +
+#   theme_light()
+# 
+# ## Half bandwith graphs
+# half_graph <- half_bw |>
+#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "lm", color = "navy", fill = "lightblue") +
+#   theme_light()
+# 
+# half_graph_q <- half_bw |>
+#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 2), color = "navy", fill = "lightblue") +
+#   theme_light()
+# 
+# half_graph_c <- half_bw |>
+#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 3), color = "navy", fill = "lightblue") +
+#   theme_light()
+# 
+# ## Quarter bandwith graphs
+# quart_graph <- quart_bw |>
+#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "lm", color = "navy", fill = "lightblue") +
+#   theme_light()
+# 
+# quart_graph_q <- quart_bw |>
+#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 2), color = "navy", fill = "lightblue") +
+#   theme_light()
+# 
+# quart_graph_c <- quart_bw |>
+#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
+#   geom_point(color = "darkcyan") +
+#   geom_vline(xintercept = 0, color = "gray") +
+#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 3), color = "navy", fill = "lightblue") +
+#   theme_light()
