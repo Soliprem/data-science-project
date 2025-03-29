@@ -10,7 +10,7 @@ library(grid)
 library(rddensity)
 library(modelsummary)
 
-# Importing and editing the data
+# Importing the data
 load("data/gov_transfers.rda")
 
 # Exploring the data
@@ -19,7 +19,7 @@ head(gov_transfers)
 gov_transfers |>
   summary() |>
   kable("markdown") |>
-  save_kable("artifacts/gov_transfers.md")
+  save_kable("artifacts/gov_transfexxrs.md")
 
 gov_transfers |>
   ggpairs()
@@ -50,7 +50,10 @@ density |>
 density |>
   rdplotdensity(X = gov_transfers$Income_Centered, type = "both", xlabel = "Normalized Income", ylabel = "Density")
 
-# Creating tibbles by different bandwiths
+# Creting binomial Support and tibbles by different bandwiths
+gov_transfers <- gov_transfers |> 
+  mutate(Support_Binomial = case_when(Support == 1 ~ 1, T ~ 0))
+
 quart_bw <- gov_transfers |>
   filter(Income_Centered > -0.005 & Income_Centered < 0.005)
 
@@ -121,16 +124,16 @@ quart_graph_c <- quart_bw |>
   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 3), color = "navy", fill = "lightblue") +
   theme_light()
 
-plots <- ggarrange(full_graph + rremove("ylab") + rremove("xlab"), full_graph_q + rremove("ylab") + rremove("xlab"), full_graph_c + rremove("ylab") + rremove("xlab"), half_graph + rremove("ylab") + rremove("xlab"), half_graph_q + rremove("ylab") + rremove("xlab"), half_graph_c + rremove("ylab") + rremove("xlab"), quart_graph + rremove("ylab") + rremove("xlab"), quart_graph_q + rremove("ylab") + rremove("xlab"), quart_graph_c + rremove("ylab") + rremove("xlab"),
-                  ncol = 3, nrow = 3)
-
-annotate_figure(plots, left = textGrob("Support", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
-                bottom = textGrob("Normalized Income", gp = gpar(cex = 1.3)))
+#plots <- ggarrange(full_graph + rremove("ylab") + rremove("xlab"), full_graph_q + rremove("ylab") + rremove("xlab"), full_graph_c + rremove("ylab") + rremove("xlab"), half_graph + rremove("ylab") + rremove("xlab"), half_graph_q + rremove("ylab") + rremove("xlab"), half_graph_c + rremove("ylab") + rremove("xlab"), quart_graph + rremove("ylab") + rremove("xlab"), quart_graph_q + rremove("ylab") + rremove("xlab"), quart_graph_c + rremove("ylab") + rremove("xlab"),
+#                  ncol = 3, nrow = 3)
+# 
+#annotate_figure(plots, left = textGrob("Support", rot = 90, vjust = 1, gp = gpar(cex = 1.3)),
+#                bottom = textGrob("Normalized Income", gp = gpar(cex = 1.3)))
 
 
 # RDD calculation by different specifications
 
-# Linear specifications
+## Linear specifications
 
 full_lm <- lm(Support ~ Participation + Income_Centered, data = gov_transfers)
 
@@ -138,28 +141,28 @@ half_lm <- lm(Support ~ Participation + Income_Centered, data = half_bw)
 
 quart_lm <- lm(Support ~ Participation + Income_Centered, data = quart_bw)
 
-# Quadratic specifications 
-full_q <- lm(Support ~ Participation + poly(Income_Centered, degree = 2), data = gov_transfers)
+## Quadratic specifications 
+full_q <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2), data = gov_transfers)
 
-half_q <- lm(Support ~ Participation + poly(Income_Centered, degree = 2), data = half_bw)
+half_q <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2), data = half_bw)
 
-quart_q <- lm(Support ~ Participation + poly(Income_Centered, degree = 2), data = quart_bw)
+quart_q <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2), data = quart_bw)
 
-# Cubic specifications
-full_c <- lm(Support ~ Participation + poly(Income_Centered, degree = 3), data = gov_transfers)
+## Cubic specifications
+full_c <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2) + I(Income_Centered^3), data = gov_transfers)
 
-half_c <- lm(Support ~ Participation + poly(Income_Centered, degree = 3), data = half_bw)
+half_c <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2) + I(Income_Centered^3), data = half_bw)
 
-quart_c <- lm(Support ~ Participation + poly(Income_Centered, degree = 3), data = quart_bw)
+quart_c <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2) + I(Income_Centered^3), data = quart_bw)
 
-# Slope (interaction) specifications 
+## Slope interaction specifications 
 full_slope <- lm(Support ~ Participation + Income_Centered + Participation * Income_Centered, data = gov_transfers)
 
 half_slope <- lm(Support ~ Participation + Income_Centered + Participation * Income_Centered, data = half_bw)
 
 quart_slope <- lm(Support ~ Participation + Income_Centered + Participation * Income_Centered, data = quart_bw)
 
-# Interaction specifications controlling (conditioning) for age
+## Interaction specifications controlling for age
 full_age <- lm(Support ~ Participation + Income_Centered +
   Participation * Income_Centered + Age, data = gov_transfers)
 
@@ -168,45 +171,70 @@ half_age <- lm(Support ~ Participation + Income_Centered +
 
 quart_age <- lm(Support ~ Participation + Income_Centered + Participation * Income_Centered + Age, data = quart_bw)
 
+## Logit specifications with slope interactions controlling for age
+full_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participation * Income_Centered + Age, family = binomial, data = gov_transfers)
+
+half_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participation * Income_Centered + Age, family = binomial, data = half_bw)
+
+quart_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participation * Income_Centered + Age, family = binomial, data = quart_bw)
+
 # Specification comparisons
-full_specs <- msummary(
-  list(full_lm, full_q, full_c, full_slope, full_age),
-  output = "markdown", stars = T
-)
-full_specs
-
-half_specs <- msummary(
-  list(half_lm, half_q, half_c, half_slope, half_age),
-  output = "markdown", stars = T
-)
-half_specs
-
-quart_specs <- msummary(
-  list(quart_lm, quart_q, quart_c, quart_slope, quart_age),
-  output = "markdown", stars = T
-)
-quart_specs
-
-full_comparison  <- msummary(
-  list(full_lm, full_q, full_c),
-  output = "markdown", stars = T
-)
-full_comparison
-
-half_comparison <- msummary(
-  list(half_lm, half_q, half_c),
-  output = "markdown", stars = T
-)
-half_comparison
-
-quart_comparison  <- msummary(
-  list(quart_lm, quart_q, quart_c),
-  output = "markdown", stars = T
-)
-quart_comparison
+# full_specs <- msummary(
+#   list(full_lm, full_q, full_c, full_slope, full_age),
+#   output = "markdown", stars = T
+# )
+# full_specs
+# 
+# half_specs <- msummary(
+#   list(half_lm, half_q, half_c, half_slope, half_age),
+#   output = "markdown", stars = T
+# )
+# half_specs
+# 
+# quart_specs <- msummary(
+#   list(quart_lm, quart_q, quart_c, quart_slope, quart_age),
+#   output = "markdown", stars = T
+# )
+# quart_specs
+# 
+# full_comparison  <- msummary(
+#   list(full_lm, full_q, full_c),
+#   output = "markdown", stars = T
+# )
+# full_comparison
+# 
+# half_comparison <- msummary(
+#   list(half_lm, half_q, half_c),
+#   output = "markdown", stars = T
+# )
+# half_comparison
+# 
+# quart_comparison  <- msummary(
+#   list(quart_lm, quart_q, quart_c),
+#   output = "markdown", stars = T
+# )
+# quart_comparison
 
 overall_comparison <- msummary(
-  list(full_lm, full_q, full_c, half_lm, half_q, half_c, quart_lm, quart_q, quart_c),
-  output = "markdown", stars = T
+  list(
+    "Full ^1" = full_lm, 
+    "Full ^2" = full_q, 
+    "Full ^3" = full_c,
+    "Full Slope" = full_slope,
+    "Full Age" = full_age,
+    "Full Lgt" = full_lgt,
+    "Half ^1" = half_lm, 
+    "Half ^2" = half_q, 
+    "Half ^3" = half_c, 
+    "Half Slope" = half_slope,
+    "Half Age" = half_age,
+    "Half Lgt" = half_lgt,
+    "Quart ^1" = quart_lm, 
+    "Quart ^2" = quart_q, 
+    "Quart ^3" = quart_c,
+    "Quart Slope" = quart_slope,
+    "Quart Age" = quart_age,
+    "Quart Lgt" = quart_lgt
+    ),
+  output = "artifacts/all_comp.md", stars = T
 )
-overall_comparison
