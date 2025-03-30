@@ -39,6 +39,8 @@
           pandoc artifacts/gov_transfers_rd_density.md -o artifacts/gov_transfers_rd_density.typ
           pandoc artifacts/gov_transfexxrs.md -o artifacts/gov_transfexxrs.typ
           pandoc artifacts/quart_comp.md -o artifacts/quart_comp.typ
+          pandoc artifacts/half_bw.md -o artifacts/half_bw.typ
+          pandoc artifacts/quart_bw.md -o artifacts/quart_bw.typ
         '';
 
         installPhase = ''
