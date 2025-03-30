@@ -17,11 +17,6 @@ load("data/gov_transfers.rda")
 head(gov_transfers)
 
 gov_transfers |>
-  summary() |>
-  kable("markdown") |>
-  save_kable("artifacts/gov_transfers.md")
-
-gov_transfers |>
   ggpairs()
 
 # Checking the data
@@ -61,7 +56,12 @@ quart_bw <- gov_transfers |>
 half_bw <- gov_transfers |>
   filter(-0.01 < Income_Centered & Income_Centered < 0.01)
 
-## Exploring the new bandwiths
+## Exploring the edited data
+gov_transfers |>
+  summary() |>
+  kable("markdown") |>
+  save_kable("artifacts/gov_transfers.md")
+
 quart_bw |>
   summary() |>
   kable("markdown") |>
