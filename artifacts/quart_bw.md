@@ -1,0 +1,9 @@
+|   |Income_Centered    |  Education   |     Age      |Participation  |   Support     |Support_Binomial |
+|:--|:------------------|:-------------|:-------------|:--------------|:--------------|:----------------|
+|   |Min.   :-0.0049910 |Min.   :0.000 |Min.   : 6.50 |Min.   :0.0000 |Min.   :0.0000 |Min.   :0.0000   |
+|   |1st Qu.:-0.0030440 |1st Qu.:3.000 |1st Qu.:19.00 |1st Qu.:0.0000 |1st Qu.:0.5000 |1st Qu.:0.0000   |
+|   |Median :-0.0013000 |Median :4.000 |Median :25.58 |Median :1.0000 |Median :1.0000 |Median :1.0000   |
+|   |Mean   :-0.0005979 |Mean   :4.171 |Mean   :29.18 |Mean   :0.5974 |Mean   :0.8084 |Mean   :0.6818   |
+|   |3rd Qu.: 0.0019182 |3rd Qu.:6.000 |3rd Qu.:36.00 |3rd Qu.:1.0000 |3rd Qu.:1.0000 |3rd Qu.:1.0000   |
+|   |Max.   : 0.0049710 |Max.   :6.000 |Max.   :71.00 |Max.   :1.0000 |Max.   :1.0000 |Max.   :1.0000   |
+|   |NA                 |NA's   :16    |NA            |NA             |NA             |NA               |
