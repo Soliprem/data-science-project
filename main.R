@@ -85,7 +85,7 @@ full_q <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2), d
 
 half_q <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2), data = half_bw)
 
-quart_q <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2),  data = quart_bw)
+quart_q <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2), data = quart_bw)
 
 ## Cubic specifications
 full_c <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2) + I(Income_Centered^3), data = gov_transfers)
