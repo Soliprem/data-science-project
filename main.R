@@ -61,6 +61,17 @@ quart_bw <- gov_transfers |>
 half_bw <- gov_transfers |>
   filter(-0.01 < Income_Centered & Income_Centered < 0.01)
 
+## Exploring the new bandwiths
+quart_bw |>
+  summary() |>
+  kable("markdown") |>
+  save_kable("artifacts/quart_bw.md")
+
+half_bw |>
+  summary() |>
+  kable("markdown") |>
+  save_kable("artifacts/half_bw.md")
+
 # RDD calculation by different specifications and bandwiths
 ## Linear specifications
 full_lm <- lm(Support ~ Participation + Income_Centered, data = gov_transfers)
@@ -74,7 +85,7 @@ full_q <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2), d
 
 half_q <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2), data = half_bw)
 
-quart_q <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2), data = quart_bw)
+quart_q <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2),  data = quart_bw)
 
 ## Cubic specifications
 full_c <- lm(Support ~ Participation + Income_Centered + I(Income_Centered^2) + I(Income_Centered^3), data = gov_transfers)
