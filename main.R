@@ -33,6 +33,7 @@ gov_transfers |>
   geom_vline(xintercept = 0, color = "gray") +
   geom_point(color = "darkcyan", position = position_jitter(width = 0, height = 0.12)) +
   theme_light()
+ggsave("artifacts/fuzziness.png", width = 21, height = 14.8, unit = "cm")
 
 ## Checking for manipulation
 density <- gov_transfers$Income_Centered |>
