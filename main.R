@@ -112,11 +112,14 @@ half_age <- lm(Support ~ Participation + Income_Centered + Participation * Incom
 quart_age <- lm(Support ~ Participation + Income_Centered + Participation * Income_Centered + Age, data = quart_bw)
 
 ## Logit specifications with slope interactions controlling for age
-full_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participation * Income_Centered + Age, family = binomial, data = gov_transfers)
+full_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participation * Income_Centered + Age, family = binomial, data = gov_transfers) 
+exp(coef(full_lgt))
 
 half_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participation * Income_Centered + Age, family = binomial, data = half_bw)
+exp(coef(half_lgt))
 
 quart_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participation * Income_Centered + Age, family = binomial, data = quart_bw)
+exp(coef(half_lgt))
 
 # Specification comparisons
 ## Specifications in the paper's main body (selected from quarter bandwith)
