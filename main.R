@@ -122,7 +122,7 @@ quart_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participat
 exp(coef(quart_lgt))
 
 # Specification comparisons
-## Specifications in the paper's main body (selected from quarter bandwith)
+## Specifications in the paper's main body (selected from quarter bandwidth)
 paper_comp <- msummary(
   list(
     "Quadratic" = quart_q, 
@@ -133,7 +133,7 @@ paper_comp <- msummary(
   output = "artifacts/paper_comp.md", stars = T
 )
 
-## Specifications in Appendix A (full bandwith)
+## Specifications on full bandwidth
 full_comp <- msummary(
   list(
     "Linear" = full_lm,
@@ -146,7 +146,7 @@ full_comp <- msummary(
   output = "artifacts/full_comp.md", stars = T
 )
 
-## Specifications in Appendix B (half bandwith)
+## Specifications on half bandwidth
 half_comp <- msummary(
   list(
     "Linear" = half_lm,
@@ -159,7 +159,7 @@ half_comp <- msummary(
   output = "artifacts/half_comp.md", stars = T
 )
 
-## Specifications in Appendix C (others from quarter bandwith)
+## Other specifications on quarter bandwidth
 quart_comp_other <- msummary(
   list(
     "Linear" = half_lm,
