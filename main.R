@@ -119,7 +119,7 @@ half_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participati
 exp(coef(half_lgt))
 
 quart_lgt <- glm(Support_Binomial ~ Participation + Income_Centered + Participation * Income_Centered + Age, family = binomial, data = quart_bw)
-exp(coef(half_lgt))
+exp(coef(quart_lgt))
 
 # Specification comparisons
 ## Specifications in the paper's main body (selected from quarter bandwith)
