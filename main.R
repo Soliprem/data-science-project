@@ -18,6 +18,7 @@ head(gov_transfers)
 
 gov_transfers |>
   ggpairs()
+ggsave("artifacts/ggpairs.png", width = 21, height = 14.8, unit = "cm")
 
 # Checking the data
 ## Checking for fuzziness
@@ -44,7 +45,8 @@ density |>
   save_kable("artifacts/gov_transfers_rd_density.md")
 
 density |>
-  rdplotdensity(X = gov_transfers$Income_Centered, type = "both", xlabel = "Normalized Income", ylabel = "Density")
+  rdplotdensity(X = gov_transfers$Income_Centered, type = "both", xlabel ="Income_Centered", ylabel = "Density")
+ggsave("artifacts/rd_density_plot.png", width = 21, height = 14.8, unit = "cm")
 
 # Creating a binomial Support variable and tibbles of different bandwiths
 gov_transfers <- gov_transfers |> 
@@ -212,119 +214,7 @@ graph_lgt <- quart_bw |>
   lapply(list("xlab", "ylab"), rremove)
 
 ## Merging the graphs
-plots <- ggarrange(graph_q, graph_slope, graph_age, graph_lgt, ncol = 2, nrow = 2)
+ggarrange(graph_q, graph_slope, graph_age, graph_lgt, ncol = 2, nrow = 2) |> 
+  annotate_figure(left = textGrob("Support", rot = 90, vjust = 0.5), bottom = textGrob("Income_Centered"))
 
-annotate_figure(plots, left = textGrob("Support", rot = 90, vjust = 0.5), bottom = textGrob("Income_Centered"))
-
-## All specifications
-# all_comp <- msummary(
-#   list(
-#     "Full ^1" = full_lm, 
-#     "Full ^2" = full_q, 
-#     "Full ^3" = full_c,
-#     "Full Slope" = full_slope,
-#     "Full Age" = full_age,
-#     "Full Lgt" = full_lgt,
-#     "Half ^1" = half_lm, 
-#     "Half ^2" = half_q, 
-#     "Half ^3" = half_c, 
-#     "Half Slope" = half_slope,
-#     "Half Age" = half_age,
-#     "Half Lgt" = half_lgt,
-#     "Quart ^1" = quart_lm, 
-#     "Quart ^2" = quart_q, 
-#     "Quart ^3" = quart_c,
-#     "Quart Slope" = quart_slope,
-#     "Quart Age" = quart_age,
-#     "Quart Lgt" = quart_lgt
-#   ),
-#   output = "artifacts/all_comp.md", stars = T
-# )
-# 
-### WIP MODEL GRAPHS
-# quart_bw |>
-#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "lm", mapping = aes(y = predict(quart_slope, quart_bw), x = Income_Centered), color = "navy", fill = "lightblue") +
-#   theme_light()
-# 
-# quart_bw |>
-#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "lm", mapping = aes(y = predict(quart_age, quart_bw), x = Income_Centered), color = "navy", fill = "lightblue") +
-#   theme_light()
-# 
-# quart_bw |>
-#   ggplot(aes(x = Income_Centered, y = Support_Binomial, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "glm", mapping = aes(y = predict(quart_lgt, quart_bw)), color = "navy", fill = "lightblue") +
-#   theme_light()
-# 
-# ## Full bandwith graphs
-# full_graph <- gov_transfers |>
-#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "lm", color = "navy", fill = "lightblue") +
-#   theme_light()
-# 
-# full_graph_q <- gov_transfers |>
-#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 2), color = "navy", fill = "lightblue") +
-#   theme_light()
-# 
-# full_graph_c <- gov_transfers |>
-#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 3), color = "navy", fill = "lightblue") +
-#   theme_light()
-# 
-# ## Half bandwith graphs
-# half_graph <- half_bw |>
-#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "lm", color = "navy", fill = "lightblue") +
-#   theme_light()
-# 
-# half_graph_q <- half_bw |>
-#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 2), color = "navy", fill = "lightblue") +
-#   theme_light()
-# 
-# half_graph_c <- half_bw |>
-#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 3), color = "navy", fill = "lightblue") +
-#   theme_light()
-# 
-# ## Quarter bandwith graphs
-# quart_graph <- quart_bw |>
-#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "lm", color = "navy", fill = "lightblue") +
-#   theme_light()
-# 
-# quart_graph_q <- quart_bw |>
-#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 2), color = "navy", fill = "lightblue") +
-#   theme_light()
-# 
-# quart_graph_c <- quart_bw |>
-#   ggplot(aes(x = Income_Centered, y = Support, group = Participation)) +
-#   geom_point(color = "darkcyan") +
-#   geom_vline(xintercept = 0, color = "gray") +
-#   geom_smooth(method = "lm", formula = y ~ poly(x, degree = 3), color = "navy", fill = "lightblue") +
-#   theme_light()
+ggsave("artifacts/plots.png", width = 21, height = 14.8, unit = "cm")
