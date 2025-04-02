@@ -18,7 +18,7 @@ head(gov_transfers)
 
 gov_transfers |>
   ggpairs()
-ggsave("artifacts/ggpairs.png", width = 21, height = 14.8, unit = "cm")
+ggsave("artifacts/ggpairs.png", width = 21, height = 13.5, unit = "cm")
 
 # Checking the data
 ## Checking for fuzziness
@@ -33,7 +33,7 @@ gov_transfers |>
   geom_vline(xintercept = 0, color = "gray") +
   geom_point(color = "darkcyan", position = position_jitter(width = 0, height = 0.12)) +
   theme_light()
-ggsave("artifacts/fuzziness.png", width = 21, height = 14.8, unit = "cm")
+ggsave("artifacts/fuzziness.png", width = 21, height = 13.5, unit = "cm")
 
 ## Checking for manipulation
 density <- gov_transfers$Income_Centered |>
@@ -47,7 +47,7 @@ density |>
 
 density |>
   rdplotdensity(X = gov_transfers$Income_Centered, type = "both", xlabel ="Income_Centered", ylabel = "Density")
-ggsave("artifacts/rd_density_plot.png", width = 21, height = 14.8, unit = "cm")
+ggsave("artifacts/rd_density_plot.png", width = 21, height = 13.5, unit = "cm")
 
 # Creating a binomial Support variable and tibbles of different bandwiths
 gov_transfers <- gov_transfers |> 
@@ -221,4 +221,4 @@ graph_lgt <- quart_bw |>
 ggarrange(graph_q, graph_slope, graph_age, graph_lgt, ncol = 2, nrow = 2) |> 
   annotate_figure(left = textGrob("Support", rot = 90, vjust = 0.5), bottom = textGrob("Income_Centered"))
 
-ggsave("artifacts/plots.png", width = 21, height = 14.8, unit = "cm")
+ggsave("artifacts/plots.png", width = 21, height = 13.5, unit = "cm")
